@@ -13,7 +13,7 @@ users.users.brodul =
    isNormalUser = true;
    extraGroups=[
     "docker" "tty" "vboxusers" "networkmanager"
-    "wheel" "dialout" "scanner" "lp"];
+    "wheel" "dialout" "scanner" "lp" "audio"];
    shell = "/run/current-system/sw/bin/zsh";
 };
 
@@ -32,6 +32,13 @@ services.xserver.deviceSection = ''
 '';
 services.xserver.useGlamor = true;
 
+# Sound
+/*hardware.pulseaudio = {
+    enable = true;
+    support32Bit = true;
+};*/
+sound.extraConfig = ''
+'';
 
 ###
 # Boot
@@ -43,9 +50,6 @@ boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" "rtsx
 boot.kernelModules = [ "kvm-intel" "fuse" ];
 
 
-hardware.pulseaudio = {
-    enable = true;
-};
 hardware.bluetooth.enable = true;
 
 # Timezone
@@ -122,9 +126,11 @@ boot.extraModprobeConfig = ''
 ###
 
 boot.kernel.sysctl = {"net.ipv4.ip_forward" = 1;};
+hardware.enableRedistributableFirmware = true;
 networking.hostName = "blackhole";
 networking.networkmanager.enable = true;
 networking.firewall.enable = false; #TODO
+
 
 
 ###
@@ -154,7 +160,7 @@ nixpkgs.config = {
     firefox = {
      jre = false;
      enableGoogleTalkPlugin = true;
-     enableAdobeFlash = true;
+     enableAdobeFlash = false;
     };
 
     chromium = {
@@ -252,7 +258,7 @@ environment.systemPackages = with pkgs; [
     gimp_2_8
     calibre
     skype
-    dropbox
+    # dropbox
     libreoffice
     vlc
 
@@ -285,7 +291,7 @@ environment.systemPackages = with pkgs; [
     pythonPackages.virtualenv
     pythonPackages.flake8
     pythonPackages.pillow
-    pythonPackages.bpython
+    #pythonPackages.bpython
 
     # Virtualization
 

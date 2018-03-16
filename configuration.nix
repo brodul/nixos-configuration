@@ -2,9 +2,13 @@
 # the system.  Help is available in the configuration.nix(5) man page
 # or the NixOS manual available on virtual console 8 (Alt+F8).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
+
+  imports = [
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+  ];
 
 # Users and groups
 users.users.brodul =
@@ -47,6 +51,7 @@ sound.extraConfig = ''
 # Kernel modules
 
 boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "sd_mod" "rtsx_pci_sdmmc" ];
+
 boot.kernelModules = [ "kvm-intel" "fuse" ];
 
 
@@ -327,4 +332,6 @@ services.udev.path = with pkgs; [ coreutils bash];
 
 # Application hacks
 users.extraGroups.wireshark.gid = 500;
+
+nix.maxJobs = lib.mkDefault 4;
 }

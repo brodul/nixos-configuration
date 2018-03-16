@@ -21,6 +21,8 @@
     shell = "/run/current-system/sw/bin/zsh";
   };
 
+  programs.wireshark.enable= true;
+
   nix.trustedUsers = [ "root" "brodul"];
 
   # Virtualization
@@ -257,7 +259,6 @@
     #xfce.thunar_archive_plugin
     #arandr
 
-    wireshark
     deluge
     #gnucash
     gimp_2_8
@@ -329,9 +330,6 @@
     # ACTION=="add", SUBSYSTEM=="usb_device", ATTRS{idVendor}=="05dc", ATTRS{idProduct}=="a838", RUN+="bash /home/brodul/scripts/auto_backup.sh"
     '';
     services.udev.path = with pkgs; [ coreutils bash];
-
-    # Application hacks
-    users.extraGroups.wireshark.gid = 500;
 
     nix.maxJobs = lib.mkDefault 4;
   }

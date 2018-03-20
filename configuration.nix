@@ -113,13 +113,16 @@
     echo
     '';
 
-    initrd.luks.devices = [ {device =
-      "/dev/mapper/all-crypted";
-      name = "cryptedroot" ; preLVM=false;} ];
+    initrd.luks.devices = [
+      {
+        device = "/dev/mapper/all-crypted";
+        name = "cryptedroot";
+        preLVM=false;}
+    ];
 
-      extraModprobeConfig = ''
+    extraModprobeConfig = ''
       options snd slots=snd-hda-intel
-      '';
+    '';
 
   };
 

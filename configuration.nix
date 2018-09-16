@@ -18,12 +18,14 @@
         isNormalUser = true;
         extraGroups=[
         "docker" "tty" "vboxusers" "networkmanager"
-        "wheel" "dialout" "scanner" "lp" "audio"];
+        "wheel" "dialout" "scanner" "lp" "audio" "wireshark"];
         shell = "/run/current-system/sw/bin/zsh";
       };
     };
 
   };
+
+
 
   # Timezone
   time.timeZone = "Europe/Ljubljana";
@@ -46,15 +48,14 @@
   };
 
   services = {
+
     xserver = {
       deviceSection = ''
         Option "TearFree" "true"
       '';
-      useGlamor = true;
     };
 
     nixosManual.showManual = true;
-    xserver.synaptics.enable = true;
 
     # Enable the OpenSSH daemon.
     openssh.enable = true;
@@ -65,12 +66,13 @@
     # Enable the X11 windowing system.
     xserver.enable = true;
     xserver.layout = "us";
+    xserver.synaptics.enable = true;
     xserver.displayManager.lightdm.enable = true;
     xserver.desktopManager.xfce.enable = true;
     xserver.windowManager.i3.enable = true;
 
     elasticsearch.enable = true;
-    mongodb.enable = true;
+    mongodb.enable = false;
 
   };
 
@@ -254,7 +256,7 @@
 
   deluge
   #gnucash
-  gimp_2_8
+  gimp
   calibre
   skype
   # dropbox
@@ -274,7 +276,7 @@
   #spring
   #springLobby
   #teeworlds
-  openra
+  #openra
   #xonotic
 
   # postgresql
@@ -283,6 +285,7 @@
   # development
   nodePackages.jshint
 
+  virtualbox
   # python stuff
   # cython
   python27Full
@@ -308,17 +311,17 @@
   # Hacking
   ####
 
-  system.activationScripts.bin_lib_links = ''
-  mkdir -p /usr/lib
-  ln -fs ${pkgs.xlibs.libX11}/lib/libX11.so.6 /usr/lib/libX11.so.6
-  '';
+  # system.activationScripts.bin_lib_links = ''
+  # mkdir -p /usr/lib
+  # ln -fs ${pkgs.xlibs.libX11}/lib/libX11.so.6 /usr/lib/libX11.so.6
+  # '';
 
 
   services.udev.extraRules = ''
   # digispark
   SUBSYSTEMS=="usb", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0753", MODE:="0666"
   KERNEL=="ttyACM*", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0753", MODE:="0666", ENV{ID_MM_DEVICE_IGNORE}="1"
-
+  SUBSYSTEMS=="usb", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0753", SYMLINK+="ttyACM%n"
   # backup usb
   # ACTION=="add", SUBSYSTEM=="usb_device", ATTRS{idVendor}=="05dc", ATTRS{idProduct}=="a838", RUN+="bash /home/brodul/scripts/auto_backup.sh"
   '';

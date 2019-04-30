@@ -45,6 +45,7 @@
     opengl.enable = true;
     enableRedistributableFirmware = true;
     bluetooth.enable = true;
+    sane.enable = true;
   };
 
   services = {
@@ -70,10 +71,14 @@
     xserver.displayManager.lightdm.enable = true;
     xserver.desktopManager.xfce.enable = true;
     xserver.windowManager.i3.enable = true;
+    xserver.windowManager.i3.extraPackages = with pkgs; [i3status dmenu i3lock i3blocks];
+   # xserver.windowManager.i3.configFile = "/home/brodul/.i3/config";
 
-    elasticsearch.enable = true;
+    elasticsearch.enable = false;
     mongodb.enable = false;
 
+    postgresql.enable = false;
+    postgresql.package = pkgs.postgresql96;
   };
 
 
@@ -166,14 +171,20 @@
     };
 
     chromium = {
-      enablePepperFlash = false;
-      enablePepperPDF = true;
-      jre = false;
+      # enablePepperFlash = false;
+      # enablePepperPDF = true;
+      # jre = false;
     };
 
   };
 
+
   environment.systemPackages = with pkgs; [
+  (import (builtins.fetchTarball {
+    url = "https://github.com/domenkozar/proxsign-nix/archive/cc26bee496facdb61c2cbb2bcfef55e167d4a85b.tar.gz";
+    sha256 = "0smhpz7hw382mlin79v681nws4pna5bdg0w8cjb4iq23frnb5dw6";
+  }))
+  foo2zjs
   # firmware
   upower
 
@@ -186,7 +197,7 @@
   mysql
   nixops
   openssl
-  rabbitmq_server
+  #rabbitmq_server
   rtorrent
   socat
   smartmontools
@@ -241,10 +252,7 @@
   psmisc
 
   # X apps
-  dmenu
   rxvt_unicode
-  i3status
-  i3lock
   # TODO: make it a floating window so it's not annoying
   p7zip
   gmpc
@@ -283,7 +291,7 @@
   pgadmin
 
   # development
-  nodePackages.jshint
+  /* nodePackages.jshint */
 
   virtualbox
   # python stuff

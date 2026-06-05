@@ -15,12 +15,13 @@
 
 | File | Purpose |
 |------|---------|
-| `flake.nix` | Flake inputs (nixpkgs unstable, home-manager) and system output |
+| `flake.nix` | Flake inputs (nixpkgs unstable, home-manager) and `mkHost` system outputs |
 | `flake.lock` | Pinned input revisions — commit this for reproducible builds |
-| `configuration.nix` | System-wide NixOS config: services, hardware, users, sudo rules |
-| `hardware-configuration.nix` | Auto-generated hardware/disk/filesystem config (commit this) |
-| `home.nix` | Home Manager config for `brodul`: user packages, shell, dotfiles |
-| `main-user.nix` | NixOS module stub for user creation (currently unused) |
+| `modules/common.nix` | Shared config applied to every machine: base CLI tools, sudo rules, ssh, gnupg |
+| `modules/desktop.nix` | Graphical workstation stack: X11/i3/XFCE, pipewire, gaming, virtualization |
+| `hosts/vipera/default.nix` | Machine-specific config for Vipera: hostname, boot, networking, user, home-manager |
+| `hosts/vipera/hardware-configuration.nix` | Auto-generated hardware/disk/filesystem config (commit this) |
+| `users/brodul/home.nix` | Home Manager config for `brodul`: user packages, shell, dotfiles |
 | `secrets/` | SOPS-encrypted secrets — **gitignored, never commit** |
 
 ---
@@ -44,10 +45,10 @@
 ## Applying Changes
 
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#default --impure
+sudo nixos-rebuild switch --flake /etc/nixos#vipera --impure
 ```
 
-`--impure` is required because `configuration.nix` reads local secrets from `/etc/nixos-local/`
+`--impure` is required because `hosts/vipera/default.nix` reads local secrets from `/etc/nixos-local/`
 (outside the flake's git tree). After the initial rebuild, `brodul` can run this without a password.
 
 ## Updating Packages
@@ -55,7 +56,7 @@ sudo nixos-rebuild switch --flake /etc/nixos#default --impure
 ```bash
 cd /etc/nixos
 nix flake update
-sudo nixos-rebuild switch --flake /etc/nixos#default --impure
+sudo nixos-rebuild switch --flake /etc/nixos#vipera --impure
 ```
 
 This pulls the latest nixpkgs-unstable and home-manager, updating all packages including `claude-code`.
@@ -73,7 +74,7 @@ This pulls the latest nixpkgs-unstable and home-manager, updating all packages i
 
 ## Claude Code Sudo Delegation
 
-`security.sudo.extraRules` in `configuration.nix` grants `brodul` passwordless access to:
+`security.sudo.extraRules` in `modules/common.nix` grants `brodul` passwordless access to:
 
 - `nixos-rebuild` — apply config changes
 - `systemctl` — manage services

@@ -32,7 +32,7 @@
 |---------|--------|
 | Desktop | i3 (WM) + XFCE (panel/session), LightDM display manager |
 | Audio | Pipewire (ALSA + PulseAudio compat) |
-| Network | NetworkManager, ZeroTier (network `REDACTED`) |
+| Network | NetworkManager, ZeroTier (network ID in `/etc/nixos-local/`) |
 | Remote | OpenSSH server |
 | Virtualization | Docker, VirtualBox |
 | Gaming | Steam + Gamescope + GameMode |

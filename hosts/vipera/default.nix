@@ -1,4 +1,7 @@
 { pkgs, inputs, ... }:
+let
+  splashPkg = inputs.deep-auth.packages.${pkgs.system}.default;
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -15,6 +18,20 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  boot.initrd.systemd.storePaths = [ splashPkg ];
+
+  boot.initrd.systemd.services.deep-auth = {
+    description = "Deep auth splash";
+    wantedBy = [ "cryptsetup.target" ];
+    before = [ "cryptsetup.target" ];
+    unitConfig.DefaultDependencies = false;
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${splashPkg}/bin/splash";
+      TimeoutStartSec = 120;
+    };
+  };
 
   services.zerotierone = {
     enable = true;

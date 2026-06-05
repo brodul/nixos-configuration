@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "deep-auth": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780654810,
+        "narHash": "sha256-VBPwqCtxyjbEJv+QCO9RT0cQmlFIX7eXcbtWCIqFJCE=",
+        "owner": "brodul",
+        "repo": "deep-auth",
+        "rev": "a5187bad7e3984c3ecd45fcc0ae197f199ac054a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "brodul",
+        "repo": "deep-auth",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -38,6 +58,7 @@
     },
     "root": {
       "inputs": {
+        "deep-auth": "deep-auth",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs"
       }

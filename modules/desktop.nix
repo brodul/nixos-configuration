@@ -44,10 +44,6 @@
 
     gvfs.enable = true;
     gnome.gnome-keyring.enable = true;
-
-    # temp fix
-    localtimed.enable = true;
-    geoclue2.enable = true;
   };
 
   hardware.bluetooth.enable = true;

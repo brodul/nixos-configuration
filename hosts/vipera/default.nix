@@ -9,6 +9,10 @@
   networking.hostName = "Vipera";
   networking.networkmanager.enable = true;
 
+  time.timeZone = "Europe/Ljubljana";
+
+  networking.modemmanager.enable = false;
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

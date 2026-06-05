@@ -34,6 +34,7 @@ in
       StandardOutput = "tty";
       TTYPath = "/dev/console";
       TTYReset = true;
+      TTYVTDisallocate = true;
       Environment = [
         "TERM=linux"
         "TERMINFO=${pkgs.ncurses}/share/terminfo"

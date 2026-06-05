@@ -21,6 +21,10 @@ in
 
   boot.initrd.systemd.storePaths = [ splashPkg pkgs.ncurses ];
 
+  boot.initrd.systemd.targets.cryptsetup = {
+    wants = [ "cryptsetup-pre.target" ];
+  };
+
   boot.initrd.systemd.services.deep-auth = {
     description = "Deep auth splash";
     wantedBy = [ "cryptsetup-pre.target" ];

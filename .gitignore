@@ -1,0 +1,10 @@
+# Nix build outputs
+result
+result-*
+
+# Secrets (SOPS/age managed)
+secrets/
+*.secret
+*.age
+*.enc
+.sops.yaml

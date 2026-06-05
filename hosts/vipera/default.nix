@@ -29,7 +29,11 @@ in
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${splashPkg}/bin/splash";
-      TimeoutStartSec = 120;
+      TimeoutStartSec = 600;
+      StandardInput = "tty";
+      StandardOutput = "tty";
+      TTYPath = "/dev/console";
+      TTYReset = true;
       Environment = [
         "TERM=linux"
         "TERMINFO=${pkgs.ncurses}/share/terminfo"

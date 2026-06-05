@@ -21,15 +21,10 @@ in
 
   boot.initrd.systemd.storePaths = [ splashPkg pkgs.ncurses ];
 
-  boot.initrd.systemd.services."systemd-cryptsetup@crypted" = {
-    wants = [ "deep-auth.service" ];
-    after = [ "deep-auth.service" ];
-  };
-
   boot.initrd.systemd.services.deep-auth = {
     description = "Deep auth splash";
-    wantedBy = [ "systemd-cryptsetup@crypted.service" ];
-    before = [ "systemd-cryptsetup@crypted.service" ];
+    wantedBy = [ "cryptsetup.target" ];
+    before = [ "cryptsetup.target" ];
     unitConfig.DefaultDependencies = false;
     serviceConfig = {
       Type = "oneshot";

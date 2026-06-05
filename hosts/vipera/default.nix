@@ -19,7 +19,7 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.initrd.systemd.storePaths = [ splashPkg ];
+  boot.initrd.systemd.storePaths = [ splashPkg pkgs.ncurses ];
 
   boot.initrd.systemd.services.deep-auth = {
     description = "Deep auth splash";
@@ -30,6 +30,10 @@ in
       Type = "oneshot";
       ExecStart = "${splashPkg}/bin/splash";
       TimeoutStartSec = 120;
+      Environment = [
+        "TERM=linux"
+        "TERMINFO=${pkgs.ncurses}/share/terminfo"
+      ];
     };
   };
 

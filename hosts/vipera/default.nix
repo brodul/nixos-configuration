@@ -23,8 +23,8 @@ in
 
   boot.initrd.systemd.services.deep-auth = {
     description = "Deep auth splash";
-    wantedBy = [ "cryptsetup.target" ];
-    before = [ "cryptsetup.target" ];
+    wantedBy = [ "cryptsetup-pre.target" ];
+    before = [ "cryptsetup-pre.target" ];
     unitConfig.DefaultDependencies = false;
     serviceConfig = {
       Type = "oneshot";

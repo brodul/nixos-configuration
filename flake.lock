@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780654810,
-        "narHash": "sha256-VBPwqCtxyjbEJv+QCO9RT0cQmlFIX7eXcbtWCIqFJCE=",
+        "lastModified": 1780656597,
+        "narHash": "sha256-iU3c5T0AComweMr6tz8G3Dvr6+ZE/qa1+iMtaZB4za8=",
         "owner": "brodul",
         "repo": "deep-auth",
-        "rev": "a5187bad7e3984c3ecd45fcc0ae197f199ac054a",
+        "rev": "ebe1cf842921294fb2b0880ddcef32ef749fd22d",
         "type": "github"
       },
       "original": {

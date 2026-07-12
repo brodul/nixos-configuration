@@ -16,6 +16,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Register QEMU aarch64 emulation so this x86_64 host can build ARM
+  # derivations locally — e.g. the Pi Zero 2 W SD image (rpizero-sd).
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   services.zerotierone = {
     enable = true;
     joinNetworks = import /etc/nixos-local/zerotier.nix;

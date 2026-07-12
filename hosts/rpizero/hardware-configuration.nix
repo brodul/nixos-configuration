@@ -24,7 +24,4 @@
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
-
-  # Broadcom WiFi/Bluetooth firmware for the Pi Zero 2 W.
-  hardware.enableRedistributableFirmware = true;
 }

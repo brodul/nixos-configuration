@@ -34,7 +34,9 @@
 | `modules/desktop.nix` | Graphical workstation stack: X11/i3/XFCE, pipewire, gaming, virtualization |
 | `hosts/vipera/default.nix` | Machine-specific config for Vipera: hostname, boot, networking, user, home-manager |
 | `hosts/vipera/hardware-configuration.nix` | Auto-generated hardware/disk/filesystem config (commit this) |
-| `hosts/rpizero/default.nix` | Machine-specific config for the Pi Zero 2 W: browser, Syncthing, CUPS printing |
+| `hosts/rpizero/configuration.nix` | Shared Pi Zero 2 W settings: browser, Syncthing, CUPS printing, user |
+| `hosts/rpizero/default.nix` | Installed-system entry point (hardware + shared config) |
+| `hosts/rpizero/sd-image.nix` | SD-image build entry point (`sd-image-aarch64` module + shared config) |
 | `hosts/rpizero/hardware-configuration.nix` | Placeholder aarch64/extlinux hardware config — regenerate on-device |
 | `users/brodul/home.nix` | Home Manager config for `brodul`: user packages, shell, dotfiles |
 | `users/brodul/home-rpizero.nix` | Minimal Home Manager profile used by the Pi Zero 2 W |
@@ -71,15 +73,33 @@ sudo nixos-rebuild switch --flake /etc/nixos#vipera --impure
 
 ### rpizero (Raspberry Pi Zero 2 W)
 
-The `hosts/rpizero/hardware-configuration.nix` in this repo is a placeholder —
-building for real ARM hardware needs an actual filesystem/bootloader layout.
-Two common paths:
+The Pi Zero 2 W is `aarch64` with only 512 MB of RAM — too weak to build itself —
+so you build a flashable SD image on another machine (e.g. Vipera). The config is
+split into three files so the same settings drive both an image build and an
+on-device rebuild:
 
-**Build a bootable SD image** (typically on an `aarch64` builder or with binfmt
-emulation, since the Pi Zero 2 W is too small to build for itself):
+| File | Role |
+|------|------|
+| `configuration.nix` | Shared, hardware-agnostic settings (browser, Syncthing, CUPS, user) |
+| `sd-image.nix` | Image build layer — imports the `sd-image-aarch64` module (root FS + bootloader) |
+| `hardware-configuration.nix` | On-device hardware layout; placeholder — regenerate on the Pi |
+| `default.nix` | Installed-system entry point = `hardware-configuration.nix` + `configuration.nix` |
+
+**Cross-building the SD image (recommended: QEMU/binfmt emulation).**
+True cross-compilation of a full NixOS closure tends to break, so instead let an
+x86_64 host build the aarch64 derivations under emulation. Vipera already enables
+this via `boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`; on any other host,
+add that line and `nixos-rebuild switch` once. Then:
 
 ```bash
-nix build .#nixosConfigurations.rpizero.config.system.build.sdImage
+nix build .#nixosConfigurations.rpizero-sd.config.system.build.sdImage
+```
+
+Flash the result:
+
+```bash
+zstd -d result/sd-image/*.img.zst -o rpizero.img
+sudo dd if=rpizero.img of=/dev/sdX bs=4M conv=fsync status=progress
 ```
 
 **Or, on the running Pi**, regenerate the hardware config and rebuild in place:
@@ -92,6 +112,11 @@ sudo nixos-rebuild switch --flake /etc/nixos#rpizero
 Printing (CUPS) is reachable at <http://localhost:631>; the Syncthing GUI is at
 <http://127.0.0.1:8384>. The bundled `gutenprint` drivers cover most OKI models —
 add a vendor PPD to `services.printing.drivers` if your exact model needs one.
+
+> **Firmware note:** this uses the mainline `sd-image-aarch64` module. If the
+> generic image doesn't boot on the Pi Zero 2 W, add the
+> [`nixos-hardware`](https://github.com/NixOS/nixos-hardware) Raspberry Pi module
+> as a flake input and import it in `sd-image.nix`.
 
 ## Updating Packages
 

@@ -118,6 +118,29 @@ add a vendor PPD to `services.printing.drivers` if your exact model needs one.
 > [`nixos-hardware`](https://github.com/NixOS/nixos-hardware) Raspberry Pi module
 > as a flake input and import it in `sd-image.nix`.
 
+#### Building on Windows (VirtualBox / WSL2)
+
+No Linux box? Build the image inside a Linux environment on Windows. This is
+QEMU *user-mode* emulation (`binfmt`), not hardware virtualization, so it works
+in a plain VM — nested VT-x is **not** required.
+
+- **VirtualBox — NixOS guest (simplest):** install NixOS from the ISO, add
+  `boot.binfmt.emulatedSystems = [ "aarch64-linux" ];` and the flakes feature to
+  `/etc/nixos/configuration.nix`, `sudo nixos-rebuild switch`, then run the
+  `nix build ...rpizero-sd...sdImage` command above.
+- **VirtualBox — Ubuntu guest:** install Nix, then
+  `sudo apt install qemu-user-static binfmt-support`, add
+  `extra-platforms = aarch64-linux` to `/etc/nix/nix.conf`, restart the daemon,
+  and build.
+- **WSL2 (lighter than a full VM):** install Ubuntu via WSL2, install Nix, do the
+  same `qemu-user-static` step, and build.
+
+Give the environment room — the aarch64 build runs under emulation and is slow:
+**60 GB+ disk, 8 GB+ RAM, as many cores as you can spare** (expect hours on the
+first build). Copy `result/sd-image/*.img.zst` out to Windows and flash it with
+**Raspberry Pi Imager** or **balenaEtcher**, which read `.zst`/`.img` directly —
+no `dd` needed.
+
 ## Updating Packages
 
 ```bash

@@ -24,6 +24,7 @@
     {
       nixosConfigurations = {
         vipera = mkHost { hostDir = ./hosts/vipera; };
+        rpizero = mkHost { system = "aarch64-linux"; hostDir = ./hosts/rpizero; };
         # laptop = mkHost { hostDir = ./hosts/laptop; };
       };
     };

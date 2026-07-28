@@ -1,6 +1,6 @@
 { ... }:
 {
-  # Installed-system entry point for the Pi Zero 2 W: the on-device hardware
+  # Installed-system entry point for the Raspberry Pi 4B: the on-device hardware
   # layout plus the shared config. Build/apply with:
   #   sudo nixos-rebuild switch --flake /etc/nixos#rpizero
   #

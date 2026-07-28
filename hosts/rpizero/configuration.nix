@@ -14,6 +14,7 @@
   imports = [
     ../../modules/common.nix
     ../../modules/remote-access.nix
+    ../../modules/office.nix
   ];
 
   networking.hostName = "rpi4";
@@ -82,7 +83,7 @@
     initialPassword = "changeme";
     isNormalUser = true;
     uid = 1000;
-    extraGroups = [ "wheel" "sudo" "audio" "video" "tty" "lp" "networkmanager" ];
+    extraGroups = [ "wheel" "sudo" "audio" "video" "tty" "lp" "scanner" "networkmanager" ];
     shell = pkgs.zsh;
   };
 

@@ -42,11 +42,25 @@
           size = 11.0;
         };
       }];
-      # Autostart the NetworkManager applet into the tray each session.
+      # Autostart tray applets + desktop daemons each session.
       startup = [
-        { command = "${pkgs.networkmanagerapplet}/bin/nm-applet"; notification = false; }
+        { command = "nm-applet"; notification = false; }         # WiFi/network tray
+        { command = "blueman-applet"; notification = false; }    # bluetooth tray
+        { command = "dunst"; notification = false; }             # notification daemon
+        { command = "udiskie --tray"; notification = false; }    # USB automount tray
       ];
     };
+    # Office-desktop keybinds (appended after the generated config):
+    #   Super+Return -> alacritty (replaces the default i3-sensible-terminal)
+    #   Super+Shift+x -> lock screen
+    #   PrintScreen  -> flameshot region screenshot
+    #   Super+d      -> rofi launcher (dmenu still on Super+... default)
+    extraConfig = ''
+      bindsym $mod+Return exec alacritty
+      bindsym $mod+Shift+x exec i3lock -c 000000
+      bindsym Print exec flameshot gui
+      bindsym $mod+d exec rofi -show drun
+    '';
   };
 
   programs.zsh = {

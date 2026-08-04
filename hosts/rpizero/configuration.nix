@@ -1,4 +1,4 @@
-{ pkgs, inputs, crossPkgsAarch64, ... }:
+{ pkgs, lib, inputs, crossPkgsAarch64, ... }:
 {
   # Shared, hardware-agnostic config for the Raspberry Pi 4B. Imported both by
   # the installed system (default.nix, alongside hardware-configuration.nix) and
@@ -63,6 +63,15 @@
       );
     })
   );
+
+  # The sd-image module force-enables hardware.enableAllHardware, pulling in the
+  # generic "all-hardware" initrd module list (dw-hdmi, dw-mipi-dsi, SCSI RAID,
+  # …). That list assumes the mainline aarch64 kernel; our RPi kernel builds
+  # HDMI via vc4 (built-in) and never builds dw-hdmi, so the module-shrink step
+  # fails with "Module dw-hdmi not found". The Pi doesn't need that broad list —
+  # its SD controller (MMC_BCM2835) and ext4 are built into the RPi kernel — so
+  # disable it. (nixos-hardware still supplies the Pi's own initrd modules.)
+  hardware.enableAllHardware = lib.mkForce false;
 
   networking.hostName = "rpi4";
   networking.networkmanager.enable = true;

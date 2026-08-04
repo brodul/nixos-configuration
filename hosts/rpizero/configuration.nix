@@ -30,11 +30,30 @@
 
   # Cross-compile the kernel instead of emulating it. nixos-hardware sets its
   # kernel with lib.mkDefault, so this plain assignment overrides it. We use the
-  # cross-built (x86 host -> aarch64 target) RPi kernel, which carries the
-  # bcm2835-codec / rpivid decode drivers AND builds at native x86 speed rather
-  # than crawling (and crashing the VM) under QEMU emulation. The rest of the
-  # image is untouched aarch64, substituted from the binary cache.
-  boot.kernelPackages = crossPkgsAarch64.linuxPackages_rpi4;
+  # cross-built (x86 host -> aarch64 target) RPi kernel, which builds at native
+  # x86 speed rather than crawling (and crashing the VM) under QEMU emulation.
+  # The rest of the image is untouched aarch64, substituted from the cache.
+  #
+  # linux_rpi4 already enables HEVC hardware decode (VIDEO_RPI_HEVC_DEC=m); we
+  # additionally turn on the VideoCore H.264 M2M codec (VIDEO_BCM2835_CODEC).
+  # Its dependencies (BCM2835_VCHIQ, VCHIQ_MMAL, VC_SM_CMA) are already set in
+  # the linux_rpi4 config, so only the codec symbol itself needs enabling.
+  #
+  # IMPORTANT: this hardware decode is usable by V4L2 clients (mpv, gstreamer),
+  # NOT Firefox — Firefox needs VA-API, which has no backend for the Pi's V4L2
+  # decoder. So `mpv <youtube-url>` (via yt-dlp) is the smooth-1080p path;
+  # in-browser YouTube stays software (enhanced-h264ify + 720p).
+  boot.kernelPackages = crossPkgsAarch64.linuxPackagesFor (
+    crossPkgsAarch64.linux_rpi4.override (old: {
+      kernelPatches = (old.kernelPatches or [ ]) ++ [{
+        name = "enable-bcm2835-codec";
+        patch = null;
+        extraStructuredConfig = {
+          VIDEO_BCM2835_CODEC = crossPkgsAarch64.lib.kernel.module;
+        };
+      }];
+    })
+  );
 
   networking.hostName = "rpi4";
   networking.networkmanager.enable = true;

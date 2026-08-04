@@ -49,9 +49,18 @@
   # Either way YouTube must be H.264 (enhanced-h264ify); VP9/AV1 have no HW path.
   boot.kernelPackages = crossPkgsAarch64.linuxPackagesFor (
     crossPkgsAarch64.linux_rpi4.override (old: {
-      structuredExtraConfig = (old.structuredExtraConfig or { }) // {
-        VIDEO_BCM2835_CODEC = crossPkgsAarch64.lib.kernel.module;
-      };
+      structuredExtraConfig = (old.structuredExtraConfig or { }) // (
+        with crossPkgsAarch64.lib.kernel; {
+          VIDEO_BCM2835_CODEC = module;
+          # The linux_rpi4 config builds ~20k modules WITH BTF + debug info,
+          # which bloats the build tree to tens of GB (overflowed the builder's
+          # disk) and adds a slow pahole BTF pass per module. None of it is
+          # needed on a media Pi, so disable it: far smaller/faster build, same
+          # runtime behaviour. mkForce because the base config enables them.
+          DEBUG_INFO_BTF = crossPkgsAarch64.lib.mkForce no;
+          DEBUG_INFO = crossPkgsAarch64.lib.mkForce no;
+        }
+      );
     })
   );
 

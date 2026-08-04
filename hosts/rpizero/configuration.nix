@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, crossPkgsAarch64, ... }:
 {
   # Shared, hardware-agnostic config for the Raspberry Pi 4B. Imported both by
   # the installed system (default.nix, alongside hardware-configuration.nix) and
@@ -27,6 +27,14 @@
     ../../modules/remote-access.nix
     ../../modules/office.nix
   ];
+
+  # Cross-compile the kernel instead of emulating it. nixos-hardware sets its
+  # kernel with lib.mkDefault, so this plain assignment overrides it. We use the
+  # cross-built (x86 host -> aarch64 target) RPi kernel, which carries the
+  # bcm2835-codec / rpivid decode drivers AND builds at native x86 speed rather
+  # than crawling (and crashing the VM) under QEMU emulation. The rest of the
+  # image is untouched aarch64, substituted from the binary cache.
+  boot.kernelPackages = crossPkgsAarch64.linuxPackages_rpi4;
 
   networking.hostName = "rpi4";
   networking.networkmanager.enable = true;

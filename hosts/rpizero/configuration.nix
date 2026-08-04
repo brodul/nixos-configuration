@@ -39,10 +39,14 @@
   # Its dependencies (BCM2835_VCHIQ, VCHIQ_MMAL, VC_SM_CMA) are already set in
   # the linux_rpi4 config, so only the codec symbol itself needs enabling.
   #
-  # IMPORTANT: this hardware decode is usable by V4L2 clients (mpv, gstreamer),
-  # NOT Firefox — Firefox needs VA-API, which has no backend for the Pi's V4L2
-  # decoder. So `mpv <youtube-url>` (via yt-dlp) is the smooth-1080p path;
-  # in-browser YouTube stays software (enhanced-h264ify + 720p).
+  # This hardware decode is exposed via V4L2. It is consumed by:
+  #   - mpv / gstreamer: the reliable path (`mpv <youtube-url>` via yt-dlp) ->
+  #     smooth 1080p.
+  #   - Firefox 116+ (ESR 140 here): decodes H.264 via V4L2-M2M directly (bug
+  #     1833354), NOT VA-API. Enabled with media.hardware-video-decoding.
+  #     force-enabled in home-rpizero.nix. Known to be finicky in practice, so
+  #     it's verified on-device (about:support), not assumed.
+  # Either way YouTube must be H.264 (enhanced-h264ify); VP9/AV1 have no HW path.
   boot.kernelPackages = crossPkgsAarch64.linuxPackagesFor (
     crossPkgsAarch64.linux_rpi4.override (old: {
       structuredExtraConfig = (old.structuredExtraConfig or { }) // {

@@ -82,14 +82,25 @@
     package = pkgs.firefox-esr;
     profiles.default = {
       id = 0;
-      # Pi-4 rendering-glitch workaround. The V3D hardware WebRender + X11-EGL
-      # path produces ghosting / stale-tile artifacts on the Pi 4; force
-      # software WebRender instead. The desktop GPU (vc4/v3d) still composites
-      # the session — only Firefox's own content rendering goes to software.
       settings = {
+        # Pi-4 rendering-glitch workaround. The V3D hardware WebRender + X11-EGL
+        # path produces ghosting / stale-tile artifacts on the Pi 4; force
+        # software WebRender instead. The desktop GPU (vc4/v3d) still composites
+        # the session — only Firefox's own content rendering goes to software.
+        # (Compositing is independent of video *decode*, below.)
         "gfx.webrender.software" = true;
         "gfx.x11-egl.force-disabled" = true;
         "layers.acceleration.disabled" = true;
+
+        # Hardware video decode. Firefox 116+ (this is ESR 140) can decode H.264
+        # via the kernel V4L2-M2M interface (/dev/video10, bcm2835-codec) — it
+        # uses V4L2 directly, NOT VA-API. force-enabled tells Firefox to trust
+        # the decoder on this otherwise-unrecognised ARM config. Pairs with
+        # enhanced-h264ify (YouTube must be H.264; VP9/AV1 have no HW path here).
+        # NOTE: real-world V4L2 decode in Firefox is known to be finicky — this
+        # is verified on-device via about:support, not assumed.
+        "media.hardware-video-decoding.force-enabled" = true;
+        "media.ffmpeg.vaapi.enabled" = true;
       };
     };
     # Force-install enhanced-h264ify: makes YouTube serve H.264 instead of

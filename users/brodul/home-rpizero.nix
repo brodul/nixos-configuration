@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # Home Manager profile for the Raspberry Pi 4B. Kept lean (the full
@@ -49,24 +49,25 @@
         { command = "dunst"; notification = false; }             # notification daemon
         { command = "udiskie --tray"; notification = false; }    # USB automount tray
       ];
+
+      # Office-desktop keybinds. These go through `keybindings` (not extraConfig)
+      # so they MERGE with home-manager's generated defaults via mkOptionDefault:
+      # Mod4+Return and Mod4+d override the stock i3-sensible-terminal / dmenu
+      # binds in place, instead of appending a second `bindsym` for the same key
+      # (two binds on one key made i3 pop a duplicate-binding nagbar). Print and
+      # Mod4+Shift+x are new keys.
+      #
+      # Why not extraConfig: home-manager inlines "Mod4+" into the binds it
+      # generates and never emits a `set $mod` line, so a `$mod` reference in
+      # extraConfig expands to the empty string — `bindsym $mod+Return` silently
+      # becomes `bindsym Return`, and bare keys start firing i3 actions.
+      keybindings = lib.mkOptionDefault {
+        "Mod4+Return" = "exec alacritty";         # terminal (replaces i3-sensible-terminal)
+        "Mod4+d" = "exec rofi -show drun";        # launcher (replaces dmenu)
+        "Mod4+Shift+x" = "exec i3lock -c 000000"; # lock screen
+        "Print" = "exec flameshot gui";           # region screenshot
+      };
     };
-    # Office-desktop keybinds (appended after the generated config):
-    #   Super+Return -> alacritty (replaces the default i3-sensible-terminal)
-    #   Super+Shift+x -> lock screen
-    #   PrintScreen  -> flameshot region screenshot
-    #   Super+d      -> rofi launcher (dmenu still on Super+... default)
-    # NOTE: home-manager inlines the modifier ("Mod4+…") into the bindings it
-    # generates and never emits a `set $mod` line, so `$mod` is undefined here.
-    # i3 expands an undefined variable to the empty string, which silently turns
-    # `bindsym $mod+Return` into `bindsym Return` — bare keys then fire i3
-    # actions and you can't type. Define $mod ourselves before using it.
-    extraConfig = ''
-      set $mod Mod4
-      bindsym $mod+Return exec alacritty
-      bindsym $mod+Shift+x exec i3lock -c 000000
-      bindsym Print exec flameshot gui
-      bindsym $mod+d exec rofi -show drun
-    '';
   };
 
   programs.zsh = {

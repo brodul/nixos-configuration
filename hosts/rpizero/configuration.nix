@@ -51,7 +51,11 @@
     crossPkgsAarch64.linux_rpi4.override (old: {
       structuredExtraConfig = (old.structuredExtraConfig or { }) // (
         with crossPkgsAarch64.lib.kernel; {
-          VIDEO_BCM2835_CODEC = module;
+          # Correct Kconfig symbol is VIDEO_CODEC_BCM2835 (verified from the RPi
+          # kernel source: drivers/staging/vc04_services/bcm2835-codec/Kconfig).
+          # An unknown symbol is silently dropped, so the exact name matters.
+          # Deps (MEDIA_SUPPORT, VIDEO_DEV, ARCH_BCM2835=y) are already met.
+          VIDEO_CODEC_BCM2835 = module;
           # The linux_rpi4 config builds ~20k modules WITH BTF + debug info,
           # which bloats the build tree to tens of GB (overflowed the builder's
           # disk) and adds a slow pahole BTF pass per module. None of it is

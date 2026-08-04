@@ -55,7 +55,13 @@
     #   Super+Shift+x -> lock screen
     #   PrintScreen  -> flameshot region screenshot
     #   Super+d      -> rofi launcher (dmenu still on Super+... default)
+    # NOTE: home-manager inlines the modifier ("Mod4+…") into the bindings it
+    # generates and never emits a `set $mod` line, so `$mod` is undefined here.
+    # i3 expands an undefined variable to the empty string, which silently turns
+    # `bindsym $mod+Return` into `bindsym Return` — bare keys then fire i3
+    # actions and you can't type. Define $mod ourselves before using it.
     extraConfig = ''
+      set $mod Mod4
       bindsym $mod+Return exec alacritty
       bindsym $mod+Shift+x exec i3lock -c 000000
       bindsym Print exec flameshot gui

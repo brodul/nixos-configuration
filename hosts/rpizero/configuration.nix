@@ -45,13 +45,9 @@
   # in-browser YouTube stays software (enhanced-h264ify + 720p).
   boot.kernelPackages = crossPkgsAarch64.linuxPackagesFor (
     crossPkgsAarch64.linux_rpi4.override (old: {
-      kernelPatches = (old.kernelPatches or [ ]) ++ [{
-        name = "enable-bcm2835-codec";
-        patch = null;
-        extraStructuredConfig = {
-          VIDEO_BCM2835_CODEC = crossPkgsAarch64.lib.kernel.module;
-        };
-      }];
+      structuredExtraConfig = (old.structuredExtraConfig or { }) // {
+        VIDEO_BCM2835_CODEC = crossPkgsAarch64.lib.kernel.module;
+      };
     })
   );
 

@@ -15,9 +15,12 @@
   # H.264, rpivid -> /dev/video19 for HEVC) that the generic sd-image-aarch64
   # kernel lacks. It keeps the same generic-extlinux-compatible bootloader the
   # SD image uses, so it layers cleanly on top of sd-image.nix.
-  # NOTE: this changes the kernel, so the next image build may compile/download a
-  # different (RPi) kernel; after flashing, verify `ls /dev/video1*` shows the
-  # decode nodes.
+  # NOTE: this changes the kernel. The RPi kernel is NOT in the binary cache
+  # (even nixpkgs' linuxPackages_rpi4 shows "will be built"), so it compiles from
+  # source. Do that on a NATIVE aarch64 machine (or a native aarch64 remote
+  # builder) — compiling it under QEMU binfmt emulation in the x86_64 builder VM
+  # exhausted resources and aborted the VM. After flashing/activating, verify
+  # `ls /dev/video1*` shows the decode nodes (video10-12 = H.264, video19 = HEVC).
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
     ../../modules/common.nix

@@ -8,10 +8,18 @@
   #
   # The Pi 4B is aarch64 with 2–8 GB of RAM, so unlike the Pi Zero 2 W it can
   # comfortably run a full graphical browser; we no longer strip the config for
-  # a 512 MB machine. The mainline sd-image-aarch64 module boots the Pi 4B well;
-  # if you want vendor GPU/firmware tuning, add the nixos-hardware
-  # `raspberry-pi-4` module as a flake input.
+  # a 512 MB machine.
+  #
+  # nixos-hardware's raspberry-pi-4 module switches to the downstream RPi kernel,
+  # which provides the V4L2 codec drivers (bcm2835-codec -> /dev/video10-12 for
+  # H.264, rpivid -> /dev/video19 for HEVC) that the generic sd-image-aarch64
+  # kernel lacks. It keeps the same generic-extlinux-compatible bootloader the
+  # SD image uses, so it layers cleanly on top of sd-image.nix.
+  # NOTE: this changes the kernel, so the next image build may compile/download a
+  # different (RPi) kernel; after flashing, verify `ls /dev/video1*` shows the
+  # decode nodes.
   imports = [
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
     ../../modules/common.nix
     ../../modules/remote-access.nix
     ../../modules/office.nix
@@ -35,9 +43,10 @@
     displayManager.lightdm.enable = true;
   };
 
-  # Browser + minimal i3 helpers. Firefox is fine on the Pi 4B's larger RAM.
+  # Minimal i3 helpers. Firefox is configured per-user in home-manager
+  # (users/brodul/home-rpizero.nix) so it can carry the Pi-4 rendering-glitch
+  # prefs + the enhanced-h264ify add-on.
   environment.systemPackages = with pkgs; [
-    firefox-esr
     i3status
     dmenu
   ];

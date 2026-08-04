@@ -18,6 +18,12 @@
     #   nm-applet            -> tray icon: click to pick a WiFi network / connect
     #   nm-connection-editor -> full GTK editor for connections
     networkmanagerapplet
+    # Video playback outside the browser. mpv can use the Pi 4's V4L2 hardware
+    # H.264/HEVC decoder (once the codec nodes exist via the nixos-hardware
+    # raspberry-pi-4 kernel), so `mpv <youtube-url>` plays far smoother than
+    # in-browser. yt-dlp resolves the stream URLs for it.
+    mpv
+    yt-dlp
   ];
 
   # Ship an i3 config so the first-boot i3-config-wizard never runs. The wizard
@@ -66,6 +72,34 @@
         "Mod4+d" = "exec rofi -show drun";        # launcher (replaces dmenu)
         "Mod4+Shift+x" = "exec i3lock -c 000000"; # lock screen
         "Print" = "exec flameshot gui";           # region screenshot
+      };
+    };
+  };
+
+  # Firefox, configured for the Pi 4.
+  programs.firefox = {
+    enable = true;
+    package = pkgs.firefox-esr;
+    profiles.default = {
+      id = 0;
+      # Pi-4 rendering-glitch workaround. The V3D hardware WebRender + X11-EGL
+      # path produces ghosting / stale-tile artifacts on the Pi 4; force
+      # software WebRender instead. The desktop GPU (vc4/v3d) still composites
+      # the session — only Firefox's own content rendering goes to software.
+      settings = {
+        "gfx.webrender.software" = true;
+        "gfx.x11-egl.force-disabled" = true;
+        "layers.acceleration.disabled" = true;
+      };
+    };
+    # Force-install enhanced-h264ify: makes YouTube serve H.264 instead of
+    # VP9/AV1. H.264 is far cheaper to decode on the Pi 4 in software, and is
+    # the codec its hardware decoder actually accelerates once the V4L2 codec
+    # nodes are present (nixos-hardware raspberry-pi-4 kernel).
+    policies.ExtensionSettings = {
+      "{9a41dee2-b924-4161-a971-7fb35c053a4a}" = {
+        install_url = "https://addons.mozilla.org/firefox/downloads/latest/enhanced-h264ify/latest.xpi";
+        installation_mode = "force_installed";
       };
     };
   };

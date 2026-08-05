@@ -151,6 +151,11 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users.brodul = import ../../users/brodul/home-rpizero.nix;
+    # If a file home-manager wants to manage already exists (e.g. a hand-edited
+    # ~/.config/i3/config), back it up instead of aborting activation with
+    # "Existing file would be clobbered" (which silently leaves the whole user
+    # profile — mpv, firefox config, i3 — unactivated).
+    backupFileExtension = "hmbak";
   };
 
   system.stateVersion = "23.11";

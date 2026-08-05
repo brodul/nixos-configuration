@@ -92,13 +92,14 @@
         "gfx.x11-egl.force-disabled" = true;
         "layers.acceleration.disabled" = true;
 
-        # Hardware video decode. Firefox 116+ (this is ESR 140) can decode H.264
-        # via the kernel V4L2-M2M interface (/dev/video10, bcm2835-codec) — it
-        # uses V4L2 directly, NOT VA-API. force-enabled tells Firefox to trust
-        # the decoder on this otherwise-unrecognised ARM config. Pairs with
-        # enhanced-h264ify (YouTube must be H.264; VP9/AV1 have no HW path here).
-        # NOTE: real-world V4L2 decode in Firefox is known to be finicky — this
-        # is verified on-device via about:support, not assumed.
+        # Hardware video decode prefs. Firefox 116+ CAN decode H.264 via the
+        # kernel V4L2-M2M interface (/dev/video10, bcm2835-codec) — BUT only if
+        # the build was compiled with --enable-v4l2. VERIFIED on-device: the
+        # nixpkgs firefox-esr build is NOT (libxul.so has zero v4l2 symbols), so
+        # these prefs are inert here and in-browser video stays on CPU. They're
+        # kept harmless in case a future nixpkgs firefox enables v4l2. For actual
+        # hardware playback use mpv (mpv <url> / yt-dlp), which IS wired to
+        # /dev/video10 and confirmed working. See hosts/rpizero/configuration.nix.
         "media.hardware-video-decoding.force-enabled" = true;
         "media.ffmpeg.vaapi.enabled" = true;
       };

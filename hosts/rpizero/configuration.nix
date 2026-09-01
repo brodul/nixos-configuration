@@ -37,7 +37,11 @@
   # Graphical session: lightdm + a bare i3 window manager.
   services.xserver = {
     enable = true;
-    xkb.layout = "us";
+    # US is the default (first in the list); Slovenian is available as a second
+    # group for typing č/š/ž/€. Toggle between them with Alt+Shift. (Alt+Shift is
+    # used rather than a Super-key combo since Super is the i3 modifier.)
+    xkb.layout = "us,si";
+    xkb.options = "grp:alt_shift_toggle";
     windowManager.i3.enable = true;
     displayManager.lightdm.enable = true;
   };

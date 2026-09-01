@@ -41,7 +41,8 @@
   environment.systemPackages = with pkgs; [
     # Office suite + documents
     libreoffice-fresh
-    zathura                 # lightweight PDF viewer
+    zathura                 # lightweight PDF viewer (read-only)
+    xournalpp               # fill / annotate / sign PDFs (forms zathura can't do)
     simple-scan             # document scanning
 
     # Everyday desktop apps
@@ -53,10 +54,15 @@
     pavucontrol             # audio mixer / device picker
     rofi                    # app launcher (nicer than dmenu)
 
+    # Video-call hardware helpers
+    v4l-utils               # test/inspect USB webcams (v4l2-ctl --list-devices)
+
     # i3 session helpers
     dunst                   # notification daemon (bare i3 has none)
     libnotify               # notify-send + client libraries
     i3lock                  # screen locker
+    xss-lock                # bridge X idle + logind lock/sleep -> run i3lock
+    xorg.xset               # sets the X idle timer that xss-lock reacts to
     udiskie                 # tray automount helper for removable drives
     blueman                 # bluetooth manager + tray applet
   ];

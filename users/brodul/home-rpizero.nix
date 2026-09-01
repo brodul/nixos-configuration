@@ -54,6 +54,13 @@
         { command = "blueman-applet"; notification = false; }    # bluetooth tray
         { command = "dunst"; notification = false; }             # notification daemon
         { command = "udiskie --tray"; notification = false; }    # USB automount tray
+        # Auto screen-lock. `xset s 600 5` arms the X screensaver at 10 min idle;
+        # xss-lock catches that (and logind lock/suspend signals) and runs i3lock,
+        # so the screen locks on idle AND before sleep. -n keeps i3lock in the
+        # foreground so xss-lock knows when the lock clears. Mod4+Shift+x still
+        # locks on demand (see keybindings below).
+        { command = "xset s 600 5"; notification = false; }
+        { command = "xss-lock --transfer-sleep-lock -- i3lock -n -c 000000"; notification = false; }
       ];
 
       # Office-desktop keybinds. These go through `keybindings` (not extraConfig)

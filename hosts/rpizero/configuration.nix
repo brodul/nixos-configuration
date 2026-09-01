@@ -22,6 +22,7 @@
     ../../modules/common.nix
     ../../modules/remote-access.nix
     ../../modules/office.nix
+    ../../modules/theme.nix
   ];
 
   networking.hostName = "rpi4";

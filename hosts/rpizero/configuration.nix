@@ -38,10 +38,11 @@
   services.xserver = {
     enable = true;
     # US is the default (first in the list); Slovenian is available as a second
-    # group for typing č/š/ž/€. Toggle between them with Alt+Shift. (Alt+Shift is
-    # used rather than a Super-key combo since Super is the i3 modifier.)
+    # group for typing č/š/ž/€. We deliberately set NO xkb group-toggle option
+    # (Alt+Shift and friends clash with app shortcuts); the layout is flipped
+    # instead by an i3 keybinding (Mod4+Space -> `xkb-switch -n`), see
+    # users/brodul/home-rpizero.nix.
     xkb.layout = "us,si";
-    xkb.options = "grp:alt_shift_toggle";
     windowManager.i3.enable = true;
     displayManager.lightdm.enable = true;
   };

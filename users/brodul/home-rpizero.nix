@@ -24,6 +24,10 @@
     # is software here too. Keep clips to 720p H.264 for smooth playback.
     mpv
     yt-dlp
+    # Flip the keyboard group (US <-> SI) from an i3 keybind; see the i3
+    # keybindings below (Mod4+Space). Also usable directly: `xkb-switch` prints
+    # the current layout, `xkb-switch -n` cycles to the next.
+    xkb-switch
   ];
 
   # Ship an i3 config so the first-boot i3-config-wizard never runs. The wizard
@@ -75,10 +79,11 @@
       # extraConfig expands to the empty string — `bindsym $mod+Return` silently
       # becomes `bindsym Return`, and bare keys start firing i3 actions.
       keybindings = lib.mkOptionDefault {
-        "Mod4+Return" = "exec alacritty";         # terminal (replaces i3-sensible-terminal)
-        "Mod4+d" = "exec rofi -show drun";        # launcher (replaces dmenu)
-        "Mod4+Shift+x" = "exec i3lock -c 000000"; # lock screen
-        "Print" = "exec flameshot gui";           # region screenshot
+        "Mod4+Return" = "exec alacritty";               # terminal (replaces i3-sensible-terminal)
+        "Mod4+d" = "exec rofi -show drun";              # launcher (replaces dmenu)
+        "Mod4+Shift+x" = "exec i3lock -c 000000";       # lock screen
+        "Print" = "exec flameshot gui";                 # region screenshot
+        "Mod4+space" = "exec ${pkgs.xkb-switch}/bin/xkb-switch -n"; # cycle US <-> SI keyboard layout
       };
     };
   };

@@ -18,10 +18,10 @@
     #   nm-applet            -> tray icon: click to pick a WiFi network / connect
     #   nm-connection-editor -> full GTK editor for connections
     networkmanagerapplet
-    # Video playback outside the browser. mpv can use the Pi 4's V4L2 hardware
-    # H.264/HEVC decoder (once the codec nodes exist via the nixos-hardware
-    # raspberry-pi-4 kernel), so `mpv <youtube-url>` plays far smoother than
-    # in-browser. yt-dlp resolves the stream URLs for it.
+    # Video playback outside the browser. `mpv <youtube-url>` (yt-dlp resolves
+    # the stream) is still a lighter path than a full browser tab, but note:
+    # on the stock generic kernel there is NO V4L2 hardware decoder, so decode
+    # is software here too. Keep clips to 720p H.264 for smooth playback.
     mpv
     yt-dlp
   ];
@@ -92,22 +92,23 @@
         "gfx.x11-egl.force-disabled" = true;
         "layers.acceleration.disabled" = true;
 
-        # Hardware video decode prefs. Firefox 116+ CAN decode H.264 via the
-        # kernel V4L2-M2M interface (/dev/video10, bcm2835-codec) — BUT only if
-        # the build was compiled with --enable-v4l2. VERIFIED on-device: the
-        # nixpkgs firefox-esr build is NOT (libxul.so has zero v4l2 symbols), so
-        # these prefs are inert here and in-browser video stays on CPU. They're
-        # kept harmless in case a future nixpkgs firefox enables v4l2. For actual
-        # hardware playback use mpv (mpv <url> / yt-dlp), which IS wired to
-        # /dev/video10 and confirmed working. See hosts/rpizero/configuration.nix.
+        # Hardware video decode prefs — INERT on this setup, kept only as a
+        # harmless marker. Two independent reasons there is no HW decode:
+        #   1. The stock generic sd-image kernel has no V4L2 decoder nodes
+        #      (bcm2835-codec / rpivid live only in the downstream RPi kernel,
+        #      which we deliberately don't build — see configuration.nix).
+        #   2. nixpkgs firefox-esr isn't compiled with --enable-v4l2 anyway
+        #      (libxul.so has zero v4l2 symbols), so even with those nodes it
+        #      couldn't use them.
+        # In-browser video therefore stays on CPU; hold YouTube to 720p H.264
+        # via enhanced-h264ify (below).
         "media.hardware-video-decoding.force-enabled" = true;
         "media.ffmpeg.vaapi.enabled" = true;
       };
     };
     # Force-install enhanced-h264ify: makes YouTube serve H.264 instead of
-    # VP9/AV1. H.264 is far cheaper to decode on the Pi 4 in software, and is
-    # the codec its hardware decoder actually accelerates once the V4L2 codec
-    # nodes are present (nixos-hardware raspberry-pi-4 kernel).
+    # VP9/AV1. H.264 is far cheaper for the Pi 4 to decode in software, which is
+    # the only decode path available here (no HW decoder on the stock kernel).
     policies.ExtensionSettings = {
       "{9a41dee2-b924-4161-a971-7fb35c053a4a}" = {
         install_url = "https://addons.mozilla.org/firefox/downloads/latest/enhanced-h264ify/latest.xpi";

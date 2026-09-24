@@ -48,7 +48,7 @@ in
 
   services.zerotierone = {
     enable = true;
-    joinNetworks = import /etc/nixos-local/zerotier.nix;
+    joinNetworks = import ../../local/zerotier.nix;
   };
 
   networking.firewall.enable = false;

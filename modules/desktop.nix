@@ -44,6 +44,8 @@
 
     gvfs.enable = true;
     gnome.gnome-keyring.enable = true;
+
+    autorandr.enable = true;
   };
 
   hardware.bluetooth.enable = true;

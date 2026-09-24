@@ -1,0 +1,2 @@
+# Copy to zerotier.nix and fill in your ZeroTier network ID(s)
+[ "xxxxxxxxxxxxxxxxx" ]

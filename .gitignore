@@ -2,6 +2,9 @@
 result
 result-*
 
+# Local overrides (machine-specific, not committed)
+local/
+
 # Secrets (SOPS/age managed)
 secrets/
 *.secret

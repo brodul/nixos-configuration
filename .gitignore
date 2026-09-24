@@ -4,6 +4,7 @@ result-*
 
 # Local overrides (machine-specific, not committed)
 local/
+!local/*.example
 
 # Secrets (SOPS/age managed)
 secrets/

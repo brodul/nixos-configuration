@@ -8,7 +8,7 @@
     ../../modules/loop-image.nix
   ];
 
-  networking.hostName = "pbs";
+  networking.hostName = "Plumbus";
   networking.firewall.enable = true;
 
   time.timeZone = "Europe/Ljubljana";

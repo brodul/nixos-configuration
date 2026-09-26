@@ -35,8 +35,8 @@
     {
       nixosConfigurations = {
         vipera = mkHost { hostDir = ./hosts/vipera; };
-        pbs = mkHost {
-          hostDir = ./hosts/pbs;
+        plumbus = mkHost {
+          hostDir = ./hosts/plumbus;
           extraModules = [
             disko.nixosModules.disko
             pbs.nixosModules.proxmox-backup-server
@@ -45,13 +45,13 @@
         # laptop = mkHost { hostDir = ./hosts/laptop; };
       };
 
-      # Ongoing updates for remote machines: `nix run github:serokell/deploy-rs -- .#pbs`
-      deploy.nodes.pbs = {
-        hostname = "pbs.example.org"; # TODO: VPS address or DNS name
+      # Ongoing updates for remote machines: `nix run github:serokell/deploy-rs -- .#plumbus`
+      deploy.nodes.plumbus = {
+        hostname = "plumbus.example.org"; # TODO: VPS address or DNS name
         profiles.system = {
           sshUser = "root";
           user = "root";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.pbs;
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.plumbus;
         };
       };
 

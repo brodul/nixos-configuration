@@ -1,5 +1,5 @@
 # Placeholder until install. Regenerate with nixos-anywhere:
-#   --generate-hardware-config nixos-generate-config ./hosts/pbs/hardware-configuration.nix
+#   --generate-hardware-config nixos-generate-config ./hosts/plumbus/hardware-configuration.nix
 # Filesystems come from disk-config.nix (disko), so none are declared here.
 { modulesPath, ... }:
 {

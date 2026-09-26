@@ -1,6 +1,6 @@
 # NixOS Configuration
 
-Hosts: `vipera` (workstation, below) and `pbs` (Proxmox Backup Server VPS, see [PBS VPS](#pbs-vps)).
+Hosts: `vipera` (workstation, below) and `plumbus` (Proxmox Backup Server VPS, see [Plumbus](#plumbus)).
 
 ## Vipera
 
@@ -26,9 +26,9 @@ Hosts: `vipera` (workstation, below) and `pbs` (Proxmox Backup Server VPS, see [
 | `hosts/vipera/default.nix` | Machine-specific config for Vipera: hostname, boot, networking, user, home-manager |
 | `hosts/vipera/hardware-configuration.nix` | Auto-generated hardware/disk/filesystem config (commit this) |
 | `modules/loop-image.nix` | `services.loopImages`: create, format once, and loop-mount an image file (VPS without spare disks) |
-| `hosts/pbs/default.nix` | VPS base: GRUB (BIOS+UEFI), SSH key-only root, firewall |
-| `hosts/pbs/disk-config.nix` | disko partition layout used by nixos-anywhere |
-| `hosts/pbs/pbs.nix` | PBS, S3 endpoint + datastore bootstrap, loop-mounted chunk cache |
+| `hosts/plumbus/default.nix` | VPS base: GRUB (BIOS+UEFI), SSH key-only root, firewall |
+| `hosts/plumbus/disk-config.nix` | disko partition layout used by nixos-anywhere |
+| `hosts/plumbus/pbs.nix` | PBS, S3 endpoint + datastore bootstrap, loop-mounted chunk cache |
 | `users/brodul/home.nix` | Home Manager config for `brodul`: user packages, shell, dotfiles |
 | `secrets/` | SOPS-encrypted secrets — **gitignored, never commit** |
 
@@ -97,9 +97,9 @@ This allows Claude Code to apply NixOS changes autonomously during a session wit
 
 ---
 
-## PBS VPS
+## Plumbus
 
-Proxmox Backup Server on a VPS, using the experimental
+Plumbus is a VPS running Proxmox Backup Server, using the experimental
 [AWildLeon/nixos-pbs](https://github.com/AWildLeon/nixos-pbs) module and overlay. The
 datastore uses the S3 backend (a tech preview in PBS 4.x), with its local chunk cache on a loop-mounted
 ext4 image at `/srv/pbs-cache` because the VPS has no spare disk.
@@ -108,10 +108,10 @@ ext4 image at `/srv/pbs-cache` because the VPS has no spare disk.
 
 Fill in the `TODO`s:
 
-- `flake.nix`: `deploy.nodes.pbs.hostname`
-- `hosts/pbs/default.nix`: root SSH public key
-- `hosts/pbs/disk-config.nix`: disk device (`/dev/sda` vs `/dev/vda`)
-- `hosts/pbs/pbs.nix`: S3 endpoint, region, bucket, and cache size
+- `flake.nix`: `deploy.nodes.plumbus.hostname`
+- `hosts/plumbus/default.nix`: root SSH public key
+- `hosts/plumbus/disk-config.nix`: disk device (`/dev/sda` vs `/dev/vda`)
+- `hosts/plumbus/pbs.nix`: S3 endpoint, region, bucket, and cache size
 
 ### Install (nixos-anywhere + disko)
 
@@ -123,18 +123,18 @@ printf 'PBS_S3_ACCESS_KEY=...\nPBS_S3_SECRET_KEY=...\n' > "$tmp/var/lib/pbs-secr
 chmod 600 "$tmp/var/lib/pbs-secrets/s3.env"
 
 nix run github:nix-community/nixos-anywhere -- \
-  --flake .#pbs \
-  --generate-hardware-config nixos-generate-config ./hosts/pbs/hardware-configuration.nix \
+  --flake .#plumbus \
+  --generate-hardware-config nixos-generate-config ./hosts/plumbus/hardware-configuration.nix \
   --extra-files "$tmp" \
   root@<vps-ip>
 ```
 
-Commit the generated `hosts/pbs/hardware-configuration.nix` afterwards.
+Commit the generated `hosts/plumbus/hardware-configuration.nix` afterwards.
 
 ### Updates (deploy-rs)
 
 ```bash
-nix run github:serokell/deploy-rs -- .#pbs
+nix run github:serokell/deploy-rs -- .#plumbus
 ```
 
 Magic rollback is on by default. If the new generation breaks SSH, it reverts on its own.
